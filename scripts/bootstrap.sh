@@ -74,7 +74,7 @@ servicebus_shared_access_key=""
 
 display_usage()
 {
-    echo "Usage: $0 [-r|--role {jb|vmss|mongo|mysql|edxapp|fullstack|devstack}] [-e|--environment {dev|bvt|prod}] [--cron] --keyvault-name {azure keyvault name} --aad-webclient-id {AAD web application client id} --aad-webclient-appkey {AAD web application client key} --aad-tenant-id {AAD Tenant to authenticate against} --azure-subscription-id {Azure subscription Id}"
+    echo "Usage: $0 [-r|--role {jb|vmss|mongo|mysql|edxapp|fullstack|devstack|security}] [-e|--environment {dev|bvt|prod}] [--cron] --keyvault-name {azure keyvault name} --aad-webclient-id {AAD web application client id} --aad-webclient-appkey {AAD web application client key} --aad-tenant-id {AAD Tenant to authenticate against} --azure-subscription-id {Azure subscription Id}"
     exit 1
 }
 
@@ -286,7 +286,7 @@ verify_state()
     required_value AZURE_MEDIA_VERSION $AZURE_MEDIA_VERSION
     required_value KITCHEN_SINK_COURSE_VERSION $KITCHEN_SINK_COURSE_VERSION
 
-    if ! is_valid_arg "jb vmss mongo mysql edxapp fullstack devstack" $EDX_ROLE ; then
+    if ! is_valid_arg "jb vmss mongo mysql edxapp fullstack devstack security" $EDX_ROLE ; then
       echo "Invalid role specified\n"
       display_usage
     fi
@@ -533,6 +533,13 @@ update_devstack()
     edx_installation_playbook
 }
 
+update_security()
+{
+    # edx playbooks - security
+    $ANSIBLE_PLAYBOOK -i localhost, -c local -e@$OXA_PLAYBOOK_CONFIG -e SAFE_UPGRADE_ON_ANSIBLE=true -e SECURITY_UNATTENDED_UPGRADES=true -e SECURITY_UPDATE_ALL_PACKAGES=true -e SECURITY_UPGRADE_ON_ANSIBLE=true security.yml
+    exit_on_error "Execution of edX Security playbbok failed"
+}
+
 ###############################################
 # START CORE EXECUTION
 ###############################################
@@ -682,6 +689,9 @@ case "$EDX_ROLE" in
     ;;
   devstack)
     update_devstack
+    ;;
+  security)
+    update_security
     ;;
   *)
     display_usage

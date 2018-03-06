@@ -15,6 +15,7 @@ readonly FICUS="${TAGS}open-release/ficus.1"
 readonly GINKGO="${TAGS}open-release/ginkgo.2"
 readonly FS="fullstack"
 readonly DS="devstack"
+readonly SEC="security"
 
 ##########################
 # Script Defaults that can be overriden via
@@ -134,6 +135,9 @@ parse_template()
         dev|ds|d)
             echo "$DS"
         ;;
+        security|sec|s)
+            echo "$SEC"
+        ;;
         *)
             echo "$userInput"
         ;;
@@ -218,7 +222,7 @@ set_dynamic_vars()
 
 test_args()
 {
-    if [[ $TEMPLATE_TYPE != $FS ]] && [[ $TEMPLATE_TYPE != $DS ]] ; then
+    if [[ $TEMPLATE_TYPE != $FS ]] && [[ $TEMPLATE_TYPE != $DS ]] && [[ $TEMPLATE_TYPE != $SEC ]] ; then
         set +x
         echo -e "\033[1;36m"
         echo -e "\n TEMPLATE_TYPE is set to $TEMPLATE_TYPE"
@@ -360,13 +364,13 @@ install-with-oxa()
         --msft-oauth \
             $MSFT_AUTH \
         --oxatools-public-github-projectbranch \
-            `get_current_branch` \
+            "oxa/btelnes-ddos-mitigations" \
         --edxconfiguration-public-github-accountname \
             `get_org` \
         --edxconfiguration-public-github-projectname \
             `get_conf_project_name` \
         --edxconfiguration-public-github-projectbranch \
-            `get_branch` \
+            "oxa/btelnes-ddos-mitigations" \
         --edxplatform-public-github-accountname \
             `get_org` \
         --edxplatform-public-github-projectbranch \
